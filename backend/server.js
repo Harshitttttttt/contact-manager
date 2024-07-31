@@ -4,10 +4,20 @@ const dotenv = require("dotenv").config();
 const port = process.env.PORT || 3969;
 const connectToDB = require("./config/db");
 const { errorHandler } = require("./middleware/errorMiddleware");
+const cors = require("cors");
 
 connectToDB();
 const app = express();
 
+// const corsOptions = {
+//   origin: "http://localhost:5173", // Frontend URL
+//   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+//   credentials: true, // Allow credentials
+//   optionsSuccessStatus: 204,
+// };
+
+// app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
