@@ -1,13 +1,18 @@
-import axios from "axios";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { editContact } from "../utils/contactActions";
 
-function Modal({ openModal, closeModal, children, onContactCreated }) {
+const EditContactModal = ({
+  openModal,
+  closeModal,
+  onContactEdited,
+  contactId,
+}) => {
   const ref = useRef();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     number: "",
     name: "",
   });
-  const [loading, setLoading] = useState(false);
   const { number, name } = formData;
   const userToken = localStorage.getItem("token");
 
@@ -20,32 +25,19 @@ function Modal({ openModal, closeModal, children, onContactCreated }) {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); // Set loading state to true when the request starts
-    try {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-        },
-      };
-
-      const userInputData = {
-        name: name,
-        number: number,
-      };
-
-      const { data } = await axios.post(
-        "http://localhost:3969/api/contacts",
-        userInputData,
-        config
-      );
-
-      console.log(data);
-      setLoading(false);
-      closeModal();
-      onContactCreated();
-    } catch (error) {
-      console.error("Error during contact creations:", error);
-      alert("Contact creation failed :("); // Display error message to the user
+    setLoading(true);
+    if (formData.name !== "" && formData.number !== "") {
+      try {
+        await editContact(contactId, userToken, formData);
+        // const { data } = await editContact(contactId, userToken, formData);
+        setLoading(false);
+        closeModal();
+        await onContactEdited(true);
+      } catch (error) {
+        throw new Error(error);
+      }
+    } else {
+      alert("Fill all details bruh");
       setLoading(false);
     }
   };
@@ -64,7 +56,6 @@ function Modal({ openModal, closeModal, children, onContactCreated }) {
       onCancel={closeModal}
       className="p-4 rounded-md shadow-lg"
     >
-      {children}
       <div>
         <label className="block text-xl">Name</label>
         <input
@@ -103,6 +94,6 @@ function Modal({ openModal, closeModal, children, onContactCreated }) {
       </div>
     </dialog>
   );
-}
+};
 
-export default Modal;
+export default EditContactModal;

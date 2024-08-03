@@ -21,6 +21,40 @@ export const deleteContact = async (contactId, token) => {
   }
 };
 
-export const editContact = (contactId) => {
-  console.log(`Edited the contact with ID: ${contactId}`);
+export const editContact = async (contactId, token, formData) => {
+  try {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    const data = await axios.put(
+      `http://localhost:3969/api/contacts/${contactId}`,
+      formData,
+      config
+    );
+
+    return data;
+  } catch (error) {
+    console.error("Error updating contact:", error);
+    throw error;
+  }
+};
+
+export const getContacts = async (token) => {
+  try {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const { data } = await axios.get(
+      "http://localhost:3969/api/contacts",
+      config
+    );
+    return data;
+  } catch (error) {
+    throw new Error(error);
+  }
 };

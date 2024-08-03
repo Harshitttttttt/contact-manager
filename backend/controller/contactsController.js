@@ -72,6 +72,7 @@ const getSingleContact = asyncHandler(async (req, res) => {
 // @access Private
 
 const updateAContact = asyncHandler(async (req, res) => {
+  console.log("Request Body:", req.body);
   try {
     const contact = await Contact.findById(req.params.id);
     // console.log(contact);
